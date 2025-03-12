@@ -1,0 +1,510 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title id="pageTitle"></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+
+		<style>
+			.black {
+				color: black;
+			}
+
+			.green {
+				color: green;
+			}
+
+			* {
+				user-select: none;
+				/* 标准语法 */
+				-webkit-user-select: none;
+				/* Chrome, Safari, Opera */
+				-moz-user-select: none;
+				/* Firefox */
+				-ms-user-select: none;
+				/* Internet Explorer/Edge */
+			}
+		</style>
+		
+		<link rel="icon" href="favicon.png" type="image/png">
+	</head>
+
+	<body>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+
+		<script src="js/xws/book.js"></script>
+		<script src="js/xws/position.js"></script>
+		<script src="js/xws/search.js"></script>
+		<script src="js/xws/exchangekq.js"></script>
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title"></h1>
+		</header>
+
+		<div class="mui-content" style="touch-action: none;">
+			<div id="popover" class="mui-popover" style="width: 100%;margin:50px auto;touch-action: none;">
+				<ul class="mui-table-view" id="menu" style="touch-action: pan-y;">
+
+				</ul>
+
+				<div class="mui-row" style="margin-top: 10px;touch-action:none;">
+					<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+						style="border:10px solid transparent;" id="lastPage">上页</button>
+					<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+						style="border:10px solid transparent;" id="nowPage"></button>
+					<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+						style="border:10px solid transparent;" id="nextPage">下页</button>
+				</div>
+			</div>
+
+			<div id="board" class="mui-col-sm-12 mui-col-xs-12"
+				style="background-color: blanchedalmond;touch-action: none;border: 2px solid lightyellow;box-shadow:1px 1px 1px 1px rosybrown;padding: 1px;">
+			</div>
+
+
+			<div id="btns" class="mui-row" style="margin-top: 20px;touch-action: none;">
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="lastIndex">上局</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="selectIndex">选局</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="nextIndex">下局</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="markIndex">标记</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="study">研究</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="screenshot">截图</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="lastStep">后退</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="nextStep">前进</button>
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
+					style="border:10px solid transparent;" id="flipBoard">翻转</button>
+			</div>
+
+
+		</div>
+	</body>
+
+</html>
+
+<script>
+	window.onload = () => {
+		let url = window.location.href;
+		let 棋谱 = decodeURI(url.split('?')[1].split('=')[1]);
+		let script = document.createElement("script");
+		script.src = `js/qps/kqs/${棋谱}.js`;
+		document.querySelector("head").appendChild(script);
+		document.querySelector("#pageTitle").innerHTML = 棋谱;
+
+		let svg =
+			`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 500"> <defs> <g id="x"> <path stroke="black" fill="none" d="m -3 -3 l 0 -9 m 0 9 l -9 0 m 0 6 l 9 0 m 0 0 l 0 9 m 6 0 l 0 -9 m 0 0 l 9 0 m 0 -6 l -9 0 m 0 0 l 0 -9 z " /> </g> <g id="xl"> <path stroke="black" fill="none" d="m -3 -3 l 0 -9 m 0 9 l -9 0 m 0 6 l 9 0 m 0 0 l 0 9 z" /> </g> <g id="xr"> <path stroke="black" fill="none" d="m 3 -3 l 0 -9 m 0 9 l 9 0 m 0 6 l -9 0 m 0 0 l 0 9 z" /> </g> <g id="r"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">車</text> </g> <g id="n"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">馬</text> </g> <g id="b"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">象</text> </g> <g id="a"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">士</text> </g> <g id="k"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">將</text> </g> <g id="c"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">炮</text> </g> <g id="p"> <circle r="23" fill="gray" /> <circle r="20" fill="black" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">卒</text> </g> <g id="R"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">車</text> </g> <g id="N"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">馬</text> </g> <g id="B"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">相</text> </g> <g id="A"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">仕</text> </g> <g id="K"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">帥</text> </g> <g id="C"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">炮</text> </g> <g id="P"> <circle r="23" fill="#BB2222" /> <circle r="20" fill="#82111F" /> <text x="-16" y="12" fill="white" font-size="32" font-family="楷体">兵</text> </g> <g id="select"> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m -23 -23 l 0 12" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m -23 -23 l 12 0" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m 23 -23 l -12 0" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m 23 -23 l 0 12" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m -23 23 l 12 0" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m -23 23 l 0 -12" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m 23 23 l -12 0" /> <path stroke-linecap="round" stroke="blue" stroke-width="2" fill="none" d="m 23 23 l 0 -12" /> </g> <g id="target"> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m -23 -23 l 0 12" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m -23 -23 l 12 0" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m 23 -23 l -12 0" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m 23 -23 l 0 12" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m -23 23 l 12 0" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m -23 23 l 0 -12" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m 23 23 l -12 0" /> <path stroke-linecap="round" stroke="green" stroke-width="2" fill="none" d="m 23 23 l 0 -12" /> <circle r="12" fill="green" /> </g> </defs> <g transform="translate(0,0)"> <path stroke="black" fill="none" stroke-linecap="round" d="m 25 25 l 400 0 m 0 0 l 0 450 m 0 0 l -400 0 m 0 0 l 0 -450 m 0 50 l 400 0 m 0 50 l -400 0 m 0 50 l 400 0 m 0 50 l -400 0 m 0 50 l 400 0 m 0 50 l -400 0 m 0 50 l 400 0 m 0 50 l -400 0 m 0 50 l 400 0 m -50 0 l 0 -200 m -50 0 l 0 200 m -50 0 l 0 -200 m -50 0 l 0 200 m -50 0 l 0 -200 m -50 0 l 0 200 m -50 0 l 0 -200 m 0 -50 l 0 -200 m 50 0 l 0 200 m 50 0 l 0 -200 m 50 0 l 0 200 m 50 0 l 0 -200 m 50 0 l 0 200 m 50 0 l 0 -200 m -100 0 l -100 100 m 0 -100 l 100 100 m 0 250 l -100 100 m 100 0 l -100 -100 z" /> <path stroke="black" fill="none" stroke-width="2" stroke-linecap="round" d="m 22 22 l 406 0" /> <path stroke="black" fill="none" stroke-width="2" stroke-linecap="round" d="m 22 22 l 0 456" /> <path stroke="black" fill="none" stroke-width="2" stroke-linecap="round" d="m 428 478 l 0 -456" /> <path stroke="black" fill="none" stroke-width="2" stroke-linecap="round" d="m 428 478 l -406 0" /> <use xlink:href="#x" transform="translate(75,125)" /> <use xlink:href="#x" transform="translate(375,125)" /> <use xlink:href="#x" transform="translate(75,375)" /> <use xlink:href="#x" transform="translate(375,375)" /> <use xlink:href="#x" transform="translate(125,175)" /> <use xlink:href="#x" transform="translate(225,175)" /> <use xlink:href="#x" transform="translate(325,175)" /> <use xlink:href="#x" transform="translate(125,325)" /> <use xlink:href="#x" transform="translate(225,325)" /> <use xlink:href="#x" transform="translate(325,325)" /> <use xlink:href="#xr" transform="translate(25,175)" /> <use xlink:href="#xr" transform="translate(25,325)" /> <use xlink:href="#xl" transform="translate(425,175)" /> <use xlink:href="#xl" transform="translate(425,325)" /> <text transform="translate(90,260)" fill="black" font-size="28" font-family="楷体">楚 河</text> <text transform="translate(290,260)" fill="black" font-size="28" font-family="楷体">汉 界</text> {{content}} </g> </svg>`;
+		let nodes = [];
+		let aspect = [];
+		let steps = [];
+		let stepIndex = -1;
+		let selects = [];
+		let targets = [];
+
+		let index = 1;
+		let page = 1;
+		let maxPage = 1;
+		let view = "w";
+
+		let initFen = "";
+
+		const pageShow = 200;
+		let marks = [];
+
+		script.onload = () => {
+			nodes = eval(棋谱);
+			initFen = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w";
+			document.querySelector("#title").innerText = index + "." + nodes[index - 1].Name;
+			maxPage = Math.floor(nodes.length / pageShow);
+			if (nodes.length % pageShow != 0) {
+				maxPage++;
+			}
+
+			加载();
+
+			//禁止浏览器手势滑动
+			document.querySelector("#board").addEventListener("touchmove", function(e) {
+				e.preventDefault()
+			}, {
+				passive: false
+			});
+			document.querySelector("#btns").addEventListener("touchmove", function(e) {
+				e.preventDefault()
+			}, {
+				passive: false
+			});
+
+			marks = localStorage.getItem(棋谱);
+			if (marks == null) {
+				marks = [];
+				marks.length = nodes.length;
+				localStorage.setItem(棋谱, JSON.stringify(marks));
+			} else {
+				marks = JSON.parse(marks);
+			}
+			if (marks[index - 1] != null) {
+				document.querySelector("#markIndex").classList =
+					"mui-btn mui-btn-success mui-btn-filled mui-col-xs-4 green";
+			} else {
+				document.querySelector("#markIndex").classList =
+					"mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4 green";
+			}
+
+			function 加载() {
+				aspect = fenToAspect(initFen)[0];
+				stepIndex = -1;
+				steps.length = 0;
+				for (let i = 0; i < nodes[index - 1].Move.length; i += 4) {
+					let y1 = nodes[index - 1].Move.charCodeAt(i) - 48;
+					let x1 = nodes[index - 1].Move.charCodeAt(i + 1) - 48;
+					let y2 = nodes[index - 1].Move.charCodeAt(i + 2) - 48;
+					let x2 = nodes[index - 1].Move.charCodeAt(i + 3) - 48;
+					steps.push({
+						x1: x1,
+						y1: y1,
+						x2: x2,
+						y2: y2
+					});
+				}
+
+				selects.length = 0;
+				targets.length = 0;
+				document.querySelector("#title").innerHTML =
+					`${nodes[index - 1].Id}.${nodes[index - 1].Name}`;
+				document.querySelector("#selectIndex").innerHTML = `${index}/${nodes.length}`;
+
+				let content = aspectToSvg(svg, aspect, selects, targets, view);
+				document.querySelector("#board").innerHTML = content;
+				useAddClickFunction(svg, aspect, view, selects, targets, steps, initFen);
+
+				if (marks[index - 1] != null) {
+					document.querySelector("#markIndex").classList =
+						"mui-btn mui-btn-success mui-btn-filled mui-col-xs-4 green";
+
+				} else {
+					document.querySelector("#markIndex").classList =
+						"mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4";
+				}
+			}
+
+			function 重来() {
+				mui.confirm("是否重来?", "提示", ["是", "否"], (e) => {
+					if (e.index == 0) {
+						加载();
+					}
+				}, "div");
+			}
+
+			function 上关() {
+				if (index > 1) {
+					index--;
+					加载();
+
+					if (marks[index - 1] != null) {
+						document.querySelector("#markIndex").classList =
+							"mui-btn mui-btn-success mui-btn-filled mui-col-xs-4 green";
+					} else {
+						document.querySelector("#markIndex").classList =
+							"mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4 green";
+					}
+				} else {
+					mui.toast("已经是首局!", {
+						duration: 2500,
+						type: "div"
+					});
+				}
+			}
+
+			function 下关() {
+				if (index < nodes.length) {
+					index++;
+					加载();
+
+					if (marks[index - 1] != null) {
+						document.querySelector("#markIndex").classList =
+							"mui-btn mui-btn-success mui-btn-filled mui-col-xs-4 green";
+					} else {
+						document.querySelector("#markIndex").classList =
+							"mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4 green";
+					}
+				} else {
+					mui.toast("已经是末局!", {
+						duration: 2500,
+						type: "div"
+					});
+				}
+			}
+
+			function 选关() {
+				加载();
+
+				let ns = [];
+				page = Math.floor(index / pageShow);
+				if (index % pageShow != 0) {
+					page++;
+				}
+				document.querySelector("#nowPage").innerHTML = `${page}/${maxPage}`;
+
+				let lis = [];
+				for (let i = (page - 1) * pageShow; i < page * pageShow && i < nodes.length; i++) {
+					ns.push(nodes[i]);
+					lis.push(
+						`<li id="id_${nodes[i].Id}" class="mui-table-view-cell ${marks[i]!=null?'green':'black'} ${(index-1)==i?'mui-active':''}">${nodes[i].Id}.${nodes[i].Name}</li>`
+					);
+				}
+				let menu = document.querySelector("#menu");
+				menu.innerHTML = lis.join("");
+				let item = document.querySelector(`#id_${index}`);
+				let targetPosition = item.offsetTop - menu.offsetTop;
+
+				mui("#popover").popover("show");
+
+				let lists = document.querySelectorAll(".mui-table-view-cell");
+				lists.forEach((list, idx, array) => {
+					list.onclick = () => {
+						let jump = parseInt(list.innerHTML.split('.')[0]);
+						跳关(jump);
+					};
+				});
+
+				// 滚动到目标位置
+				item.scrollIntoView({
+					behavior: "smooth",
+					block: "center"
+				});
+
+
+			}
+
+			function 上页() {
+				if (page > 1) {
+					index -= pageShow;
+					选关();
+				}
+			}
+
+			function 下页() {
+				if (page < maxPage) {
+					index += pageShow;
+					选关();
+				}
+			}
+
+			function 跳关(id) {
+				mui("#popover").popover("toggle");
+				index = id;
+
+				加载();
+			}
+
+			function 标记() {
+				if (marks[index - 1] == null) {
+					marks[index - 1] = true;
+				} else {
+					marks[index - 1] = null;
+				}
+				localStorage.setItem(棋谱, JSON.stringify(marks));
+
+				if (marks[index - 1] != null) {
+					document.querySelector("#markIndex").classList =
+						"mui-btn mui-btn-success mui-btn-filled mui-col-xs-4 green";
+					if (index < nodes.length) {
+						下关();
+					}
+				} else {
+					document.querySelector("#markIndex").classList =
+						"mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4";
+				}
+			}
+
+			function 研究() {
+				let ms = [];
+				steps.forEach((step, idx, array) => {
+					let x1 = step.x1,
+						y1 = step.y1,
+						x2 = step.x2,
+						y2 = step.y2;
+					let m = "";
+					m += String.fromCharCode(97 + y1);
+					m += (9 - x1);
+					m += String.fromCharCode(97 + y2);
+					m += (9 - x2);
+					ms.push(m);
+				});
+				let url = `https://xiangqiai.com/#/${initFen} moves ${ms.join("")}`;
+				window.open(url, "_blank");
+			}
+
+			function 截图() {
+				let serializer = new XMLSerializer();
+				let svgstr = document.querySelector("#board").children[0];
+				let source = '<?xml version="1.0" standalone="no"?>\r\n' + serializer.serializeToString(svgstr);
+
+				let img = document.createElement("img");
+				img.style.backgroundColor = "wheat";
+				img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source)
+				img.width = 900;
+				img.height = 1000;
+
+				img.onload = async function() {
+					let canvas = document.createElement("canvas");
+					let cxt = canvas.getContext("2d");
+					canvas.width = img.width;
+					canvas.height = img.height;
+					cxt.rect(0, 0, img.width, img.height);
+					cxt.fillStyle = "wheat";
+					cxt.fill();
+					cxt.drawImage(img, 0, 0);
+					let dataURL = canvas.toDataURL({
+						pixelRatio: 1
+					});
+					const data = await fetch(dataURL);
+					const blob = await data.blob();
+					let ClipboardItem = window.ClipboardItem;
+
+					await navigator.clipboard.writeText([
+						new ClipboardItem({
+							[blob.type]: blob,
+						}),
+					]);
+
+
+					if (!(/Mobi|Android|iPhone/i.test(navigator.userAgent))) {
+						alert("成功复制到剪切板！");
+					} else {
+						canvas.toBlob((blob) => {
+							let url = URL.createObjectURL(blob);
+							let a = document.createElement('a');
+							a.href = url;
+							let date = new Date();
+							let fileName = date.getFullYear().toString() +
+								date.getMonth().toString().padStart(2, '0') +
+								date.getDay().toString().padStart(2, '0') +
+								date.getHours().toString().padStart(2, '0') +
+								date.getMinutes().toString().padStart(2, '0') +
+								date.getSeconds().toString().padStart(2, '0');
+							a.download = fileName + ".png";
+							a.click();
+							URL.revokeObjectURL(url);
+						});
+					}
+				}
+			}
+
+			function 前进() {
+				if (stepIndex >= steps.length - 1) {
+					mui.toast("已经是最后一步!", {
+						duration: 2500,
+						type: "div"
+					});
+					return;
+				}
+
+				stepIndex++;
+				aspect = fenToAspect(initFen)[0];
+				selects.length = 0;
+				targets.length = 0;
+
+				for (let i = 0; i <= stepIndex; i++) {
+					let step = steps[i];
+
+					let x1 = step.x1,
+						y1 = step.y1,
+						x2 = step.x2,
+						y2 = step.y2;
+					aspect[x2][y2] = aspect[x1][y1];
+					aspect[x1][y1] = 0;
+					selects.length = 0;
+					selects.push({
+						x: x1,
+						y: y1
+					});
+					selects.push({
+						x: x2,
+						y: y2
+					});
+				}
+
+				let content = aspectToSvg(svg, aspect, selects, targets, view);
+				document.querySelector("#board").innerHTML = content;
+				useAddClickFunction(svg, aspect, view, selects, targets, steps, initFen);
+			}
+
+			function 后退() {
+				if (stepIndex <= -1) {
+					mui.toast("已经是最初局面!", {
+						duration: 2500,
+						type: "div"
+					});
+					return;
+				}
+
+				stepIndex--;
+				aspect = fenToAspect(initFen)[0];
+				selects.length = 0;
+				targets.length = 0;
+
+				for (let i = 0; i <= stepIndex; i++) {
+					let step = steps[i];
+
+					let x1 = step.x1,
+						y1 = step.y1,
+						x2 = step.x2,
+						y2 = step.y2;
+					aspect[x2][y2] = aspect[x1][y1];
+					aspect[x1][y1] = 0;
+					selects.length = 0;
+					selects.push({
+						x: x1,
+						y: y1
+					});
+					selects.push({
+						x: x2,
+						y: y2
+					});
+				}
+
+				let content = aspectToSvg(svg, aspect, selects, targets, view);
+				document.querySelector("#board").innerHTML = content;
+				useAddClickFunction(svg, aspect, view, selects, targets, steps, initFen);
+			}
+
+			function 翻转() {
+				if (view == "w") {
+					view = "b";
+				} else {
+					view = "w";
+				}
+				let content = aspectToSvg(svg, aspect, selects, targets, view);
+				document.querySelector("#board").innerHTML = content;
+				useAddClickFunction(svg, aspect, view, selects, targets, steps, initFen);
+			}
+
+			document.querySelector("#title").onclick = 重来;
+			document.querySelector("#lastIndex").onclick = 上关;
+			document.querySelector("#nextIndex").onclick = 下关;
+			document.querySelector("#selectIndex").onclick = 选关;
+			document.querySelector("#lastPage").onclick = 上页;
+			document.querySelector("#nextPage").onclick = 下页;
+			document.querySelector("#markIndex").onclick = 标记;
+			document.querySelector("#study").onclick = 研究;
+			document.querySelector("#screenshot").onclick = 截图;
+			document.querySelector("#lastStep").onclick = 后退;
+			document.querySelector("#nextStep").onclick = 前进;
+			document.querySelector("#flipBoard").onclick = 翻转;
+		};
+	};
+</script>

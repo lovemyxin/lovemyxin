@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+		</script>
+		<title>首页</title>
+		<script src="js/zcs.js"></script>
+		<script src="js/kqs.js"></script>
+		
+		<style>
+			* {
+				user-select: none;
+				/* 标准语法 */
+				-webkit-user-select: none;
+				/* Chrome, Safari, Opera */
+				-moz-user-select: none;
+				/* Firefox */
+				-ms-user-select: none;
+				/* Internet Explorer/Edge */
+			}
+		</style>
+		
+		<link rel="icon" href="favicon.png" type="image/png">
+	</head>
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">象棋内功</h1>
+		</header>
+
+		<div class="mui-content">
+			<nav class="mui-bar mui-bar-tab">
+				<a class="mui-tab-item mui-active" href="#zc">
+					<span class="mui-tab-label">中残</span>
+				</a>
+				<a class="mui-tab-item" href="#kq">
+					<span class="mui-tab-label">开全</span>
+				</a>
+				<a class="mui-tab-item" href="#gy">
+					<span class="mui-tab-label">关于</span>
+				</a>
+			</nav>
+
+			<div>
+				<div id="zc" class="mui-control-content mui-active">
+					<ul id="zcul" class="mui-table-view mui-grid-view mui-grid-9">
+
+					</ul>
+				</div>
+				<div id="kq" class="mui-control-content">
+					<ul id="kqul" class="mui-table-view mui-grid-view mui-grid-9">
+
+					</ul>
+				</div>
+				<div id="gy" class="mui-control-content">
+					<ul class="mui-table-view mui-grid-view mui-grid-9"
+						style="touch-action: none;height: 100%;">
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[开发]:冰凌</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[QQ]:1735940176</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[VX]:17307404329</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[提示]:部分手机或浏览器无法使用[截图]按钮</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[中残]:前面十三本棋谱为基础,[大师杀局]作为补充</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[开全]:不要迷信棋谱,点击[研究]跳转皮卡鱼拆解</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[鸣谢]:mui库团队,github团队,象棋巫师团队</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-12">
+							<a>
+								<div class="mui-media-body">[其他PDF棋谱]:<a href="https://pan.quark.cn/s/ccd5fdb6333a" target="_blank" style="color:darkred">夸克网盘，点击跳转</a></div>
+							</a>
+						</li>
+					</ul>
+
+
+				</div>
+			</div>
+
+			<div style="height: 50px;"></div>
+		</div>
+	</body>
+</html>
+
+<script>
+	window.onload = () => {
+		中残.forEach((value, index, array) => {
+			let li = document.createElement("li");
+			li.classList = "mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3";
+			let a = document.createElement("a");
+			a.href = `train.html?棋谱=${value}`;
+			let div = document.createElement("div");
+			div.classList = "mui-media-body";
+			div.innerText = value;
+			a.appendChild(div);
+			li.appendChild(a);
+			document.querySelector("#zcul").appendChild(li);
+		});
+
+		开全.forEach((value, index, array) => {
+			let li = document.createElement("li");
+			li.classList = "mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-6";
+			let a = document.createElement("a");
+			a.href = `read.html?棋谱=${value}`;
+			let div = document.createElement("div");
+			div.classList = "mui-media-body";
+			div.innerText = value;
+			a.appendChild(div);
+			li.appendChild(a);
+			document.querySelector("#kqul").appendChild(li);
+		});
+	};
+</script>
