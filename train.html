@@ -27,6 +27,21 @@
 				-ms-user-select: none;
 				/* Internet Explorer/Edge */
 			}
+			
+			@media screen and (min-width:1000px) {
+				
+				
+				.mui-content{
+					width:78%;
+					display: flex;
+					margin: 0 auto;
+				}
+				
+				#board,
+				#btns{
+					width: 50%;
+				}
+			}
 		</style>
 		
 		<link rel="icon" href="favicon.png" type="image/png">
@@ -161,7 +176,7 @@
 				selects.length = 0;
 				targets.length = 0;
 				document.querySelector("#title").innerHTML =
-					`${nodes[index - 1].Id}.${nodes[index - 1].Name}`;
+					`${nodes[index - 1].Id}.${nodes[index - 1].Name}(评分:${getScore(initFen)})`;
 				document.querySelector("#selectIndex").innerHTML = `${index}/${nodes.length}`;
 
 				let content = aspectToSvg(svg, aspect, selects, targets, view);
@@ -366,21 +381,20 @@
 					cxt.fillStyle = "wheat";
 					cxt.fill();
 					cxt.drawImage(img, 0, 0);
-					let dataURL = canvas.toDataURL({
-						pixelRatio: 1
-					});
-					const data = await fetch(dataURL);
-					const blob = await data.blob();
-					let ClipboardItem = window.ClipboardItem;
-					
-					await navigator.clipboard.writeText([
-						new ClipboardItem({
-							[blob.type]: blob,
-						}),
-					]);
-
 
 					if (!(/Mobi|Android|iPhone/i.test(navigator.userAgent))) {
+						let dataURL = canvas.toDataURL({
+							pixelRatio: 1
+						});
+						const data = await fetch(dataURL);
+						const blob = await data.blob();
+						let ClipboardItem = window.ClipboardItem;
+						
+						await navigator.clipboard.write([
+							new ClipboardItem({
+								[blob.type]: blob,
+							}),
+						]);
 						alert("成功复制到剪切板！");
 					} else {
 						canvas.toBlob((blob) => {

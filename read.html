@@ -27,6 +27,20 @@
 				-ms-user-select: none;
 				/* Internet Explorer/Edge */
 			}
+			
+			@media screen and (min-width:1000px) {
+				.mui-content{
+					width:78%;
+					display: flex;
+					margin: 0 auto;
+				}
+				
+				#board,
+				#btns{
+					width: 50%;
+				}
+			}
+			
 		</style>
 		
 		<link rel="icon" href="favicon.png" type="image/png">
@@ -67,7 +81,6 @@
 			<div id="board" class="mui-col-sm-12 mui-col-xs-12"
 				style="background-color: blanchedalmond;touch-action: none;border: 2px solid lightyellow;box-shadow:1px 1px 1px 1px rosybrown;padding: 1px;">
 			</div>
-
 
 			<div id="btns" class="mui-row" style="margin-top: 20px;touch-action: none;">
 				<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-col-xs-4"
@@ -368,21 +381,19 @@
 					cxt.fillStyle = "wheat";
 					cxt.fill();
 					cxt.drawImage(img, 0, 0);
-					let dataURL = canvas.toDataURL({
-						pixelRatio: 1
-					});
-					const data = await fetch(dataURL);
-					const blob = await data.blob();
-					let ClipboardItem = window.ClipboardItem;
-
-					await navigator.clipboard.writeText([
-						new ClipboardItem({
-							[blob.type]: blob,
-						}),
-					]);
-
 
 					if (!(/Mobi|Android|iPhone/i.test(navigator.userAgent))) {
+						let dataURL = canvas.toDataURL({
+							pixelRatio: 1
+						});
+						const data = await fetch(dataURL);
+						const blob = await data.blob();
+						let ClipboardItem = window.ClipboardItem;
+						await navigator.clipboard.write([
+							new ClipboardItem({
+								[blob.type]: blob,
+							}),
+						]);
 						alert("成功复制到剪切板！");
 					} else {
 						canvas.toBlob((blob) => {

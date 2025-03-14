@@ -305,8 +305,7 @@ function getAiMove(fen) {
 	try {
 		let url = `https://www.chessdb.cn/chessdb.php?action=queryall&learn=1&showall=1&board=${fen}`;
 		let http = new XMLHttpRequest();
-		http.timeout=500;
-		http.open("get", url, true);
+		http.open("get", url, false);
 		http.onreadystatechange = () => {
 			if (http.readyState == 4 && http.status) {
 				let result = http.responseText.trim();
@@ -361,7 +360,8 @@ function getAiMove(fen) {
 					x1: x1,
 					y1: y1,
 					x2: x2,
-					y2: y2
+					y2: y2,
+					ty:'yk'
 				};
 			}
 		};
@@ -388,7 +388,8 @@ function getAiMove(fen) {
 				x1: x1,
 				y1: y1,
 				x2: x2,
-				y2: y2
+				y2: y2,
+				ty:"ws"
 			};
 		} catch (e) {
 			console.log(e);
@@ -397,6 +398,62 @@ function getAiMove(fen) {
 	}
 
 	return mr;
+}
+
+function getScore(fen){
+	let yunku = false;
+	let score=0;
+	try {
+		let url = `https://www.chessdb.cn/chessdb.php?action=queryall&learn=1&showall=1&board=${fen}`;
+		let http = new XMLHttpRequest();
+		http.open("get", url, false);
+		http.onreadystatechange = () => {
+			if (http.readyState == 4 && http.status) {
+				let result = http.responseText.trim();
+				if (!result.startsWith("move")) {
+					return;
+				}
+				yunku = true;
+				let lines = result.split("|");
+				let moves = [];
+				lines.forEach((line, index, array) => {
+					let move = {};
+					let ps = line.split(',');
+					ps.forEach((p, idx, arr) => {
+						let as = p.split(':');
+						switch (as[0]) {
+							case "move":
+								move["move"] = as[1];
+								break;
+							case "score":
+								move["score"] = as[1];
+								break;
+							case "rank":
+								move["rank"] = as[1];
+								break;
+						}
+					});
+					if (move["score"] != "??") {
+						move["score"] = parseInt(move["score"]);
+						move["rank"] = parseInt(move["rank"]);
+						moves.push(move);
+					}
+				});
+	
+				if (moves.length >= 1) {
+					score=moves[0]["score"];
+					return score;
+				}
+			}
+		};
+		http.send();
+	} catch (e) {
+		console.log(e);
+	}
+	if(!yunku){
+		return "未知";
+	}
+	return score;
 }
 
 function getLegalMoves(fen, x, y) {
